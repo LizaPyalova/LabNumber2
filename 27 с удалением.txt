@@ -1,0 +1,129 @@
+import java.util.Arrays;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+
+
+public class Main {
+
+    public static void createArray(int n, int m, int arr[][]){ //создает массив
+        System.out.println("Type elements of Array: ");
+        Scanner sc = new Scanner(System.in);
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                arr[i][j] = sc.nextInt();
+            }
+        }
+    }
+
+    public static void printA(int n, int m, int  arr[][]){ //для вывода массива, но он тут не пригодился
+        System.out.println("Your array: ");
+        for(int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                System.out.print(arr[i][j] + " ");
+            }
+            System.out.print('\n');
+        }
+    }
+
+    public static void sortUp(int n, int arr[][]){  //сортировка в порядке возрастания
+        for(int i = 0; i < n; i++) {
+            Arrays.sort(arr[i]);
+        }
+    }
+
+    public static void sortDown(int n, int m, int[][] arr){  //сортировка в порядке убывания
+        int [][] arrC = new int[n][m];
+        for(int i = 0; i < n; i++) {          //создадим такой же массив, который отсортируем в порядке возрастания
+            for (int j = 0; j < m; j++) {
+                arrC[i][j] = arr[i][j];
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            Arrays.sort(arrC[i]);
+        }
+        for(int i = 0; i < n; i++) {            //зеркалим этот отсортированный массив
+            for (int j = 0; j < m; j++){
+                arr[i][j] = arrC[i][m-1-j];
+            }
+        }
+    }
+
+    public static boolean compare(int a[], int b[]){  //функция сравниваниет два массива (одномерных, мы сравниваем строчки двумерных) и возвращает тру, если они равны
+        for (int i = 0; i < a.length; i++){
+            if (a[i] != b[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static int[] deleteEl(int m, int a[]){
+        for(int i=0; i<m; i++){
+            for(int j=i; j<m; j++){
+                if(a[i]==a[j] && i!=j){
+                    if(j!=m-1){
+                    a[j]=a[j+1];
+                    }
+                    else{
+                        a[j]=0;
+                    }
+                }
+            }
+        }
+        return a;
+    }
+
+    public static void task(int n, int m,int arr[][]){
+        int [][] arrUp = new int[n][m];         // создаем два массива, как исходный, которые отсортируем позже
+        int [][] arrSec = new int[n][m];
+        for(int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                arrUp[i][j] = arr[i][j];
+                arrSec[i][j] = arr[i][j];
+            }
+        }
+        for(int i=0; i<n; i++) {
+          arrUp[i]=deleteEl(m, arrUp[i]);
+           arrSec[i]=deleteEl(m, arrSec[i]);
+        }
+        sortUp(n, arrUp);           //сортируем
+        sortUp(n, arrSec);
+        int [] sumS = new int[n];
+        for (int i = 0; i < n; i++){
+            sumS[i]=1;
+        }
+
+        for(int i = 0; i < n-1; i++) {
+            for (int j = 0; j < n; j++){
+                if (!compare(arrSec[i], arrUp[j]) && i!=j){
+                    for(int k=j+1; k<n; k++){
+                        if(k!=i){
+                            if(compare(arrUp[k],arrUp[j])){
+                                sumS[i]--;
+                                break;
+                            }
+                        }
+                    }
+                sumS[i]++;
+                }
+            }
+        }
+        Arrays.sort(sumS);
+        System.out.println("Sum of different lines is " + sumS[n-1]);
+
+    }
+    public static void main(String[] args) throws FileNotFoundException {
+        Scanner scan = new Scanner(new File("in.txt"));
+        int n = scan.nextInt();
+        int m = scan.nextInt();
+        System.out.println("Your n and m: " + n +" " +m);
+        int [][] arr = new int[n][m];
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                arr[i][j] = scan.nextInt();
+            }
+        }
+        task(n, m, arr);
+    }
+}
